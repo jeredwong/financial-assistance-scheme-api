@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/mapper"
 	"github.com/jeredwong/financial-scheme-manager/internal/services"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
+	// "github.com/gorilla/mux"
 )
 
 type ApplicantHandler struct {
@@ -21,44 +22,49 @@ func NewApplicantService(applicantService services.ApplicantService) *ApplicantH
 	return &ApplicantHandler{applicantService: applicantService}
 }
 
-func (h *ApplicantHandler) GetApplicant(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := uuid.Parse(vars["id"])
-	if err != nil {
-		http.Error(w, "Invalid applicant ID", http.StatusBadRequest)
-		return
-	}
+// func (h *ApplicantHandler) GetApplicant(w http.ResponseWriter, r *http.Request) {
+// 	vars := mux.Vars(r)
+// 	id, err := uuid.Parse(vars["id"])
+// 	if err != nil {
+// 		http.Error(w, "Invalid applicant ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	applicant, err := h.applicantService.GetApplicantById(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
+// 	applicant, err := h.applicantService.GetApplicantById(id)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusNotFound)
+// 		return
+// 	}
 
-	writeJSON(w, applicant)
-}
+// 	writeJSON(w, applicant)
+// }
 
 func (h *ApplicantHandler) ListApplicants(w http.ResponseWriter, r *http.Request) {
-	pageStr := r.URL.Query().Get("page")
-	pageSizeStr := r.URL.Query().Get("pageSize")
-
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1  {
-		page = 1
+	query := r.URL.Query()
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil || page < 1 {
+		page = constants.DefaultPage
+	}
+	pageSize, err := strconv.Atoi(query.Get("page_size"))
+	if err != nil || pageSize < 1  {
+		pageSize = constants.DefaultPageSize
+	}
+	if pageSize > constants.MaxPageSize {
+		pageSize = constants.MaxPageSize
 	}
 
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if err != nil || page < 1  {
-		page = 10
+	paginationQuery := dto.PaginationQuery{
+		Page:     page,
+        PageSize: pageSize,
 	}
 
-	applicants, err := h.applicantService.ListApplicants(page, pageSize)
+	response, err := h.applicantService.ListApplicants(paginationQuery)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError) 
+		http.Error(w, "Failed to fetch applicants", http.StatusInternalServerError) 
 		return
 	}
 
-	writeJSON(w, applicants)
+	writeJSON(w, response)
 }
 
 func (h *ApplicantHandler) CreateApplicant(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +80,6 @@ func (h *ApplicantHandler) CreateApplicant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// convert DTO to model
 	applicant := mapper.ApplicantDTOToModel(applicantDTO)
 
 	err := h.applicantService.CreateApplicant(&applicant)
@@ -85,7 +90,6 @@ func (h *ApplicantHandler) CreateApplicant(w http.ResponseWriter, r *http.Reques
 
 	// TODO: add household members 
 
-	// convert model back to DTO
 	responseDTO := mapper.ApplicantModelToDTO(applicant)
 	
 	w.WriteHeader(http.StatusCreated)
@@ -93,7 +97,7 @@ func (h *ApplicantHandler) CreateApplicant(w http.ResponseWriter, r *http.Reques
 }
 
 // helper functions
-// write formatted JSON responsoe
+// format JSON response
 func writeJSON(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
@@ -105,6 +109,6 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 
 // validate applicant DTO
 func validateApplicantDTO(dto dto.ApplicantDTO) error {
-	// TODO: 1 validation logic 
+	// TODO: validation logic 
 	return nil
 }

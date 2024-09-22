@@ -69,5 +69,5 @@ type HouseholdMember struct {
 	SchoolLevel			SchoolLevel
 	CreatedAt			time.Time
 	UpdatedAt			time.Time
-	Applicant			Applicant
+	// Applicant			Applicant
 }
