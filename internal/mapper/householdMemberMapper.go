@@ -1,22 +1,19 @@
 package mapper
 
 import (
+	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 )
 
 func HouseholdMemberDTOToModel(memberDTO dto.HouseholdMemberDTO) models.HouseholdMember {
 	return models.HouseholdMember{
-		// ID:               memberDTO.ID,
-		// ApplicantID:      memberDTO.ApplicantID,
 		Name:             memberDTO.Name,
 		DateOfBirth:      memberDTO.DateOfBirth,
-		Sex:              models.Sex(memberDTO.Sex),
-		Relationship:     models.Relationship(memberDTO.Relationship),
-		EmploymentStatus: models.EmploymentStatus(memberDTO.EmploymentStatus),
-		SchoolLevel:      models.SchoolLevel(memberDTO.SchoolLevel),
-		// CreatedAt:        memberDTO.CreatedAt,
-		// UpdatedAt:        memberDTO.UpdatedAt,
+		Sex:              constants.Sex(memberDTO.Sex),
+		Relationship:     constants.Relationship(memberDTO.Relationship),
+		EmploymentStatus: constants.EmploymentStatus(memberDTO.EmploymentStatus),
+		SchoolLevel:      constants.SchoolLevel(memberDTO.SchoolLevel),
 	}
 }
 
@@ -30,16 +27,12 @@ func HouseholdMemberDTOstoModels(memberDTOs []dto.HouseholdMemberDTO) []models.H
 
 func HouseholdMemberModelToDTO(member models.HouseholdMember) dto.HouseholdMemberDTO {
 	return dto.HouseholdMemberDTO{
-		// ID:               member.ID,
-		// ApplicantID:      member.ApplicantID,
 		Name:             member.Name,
 		DateOfBirth:      member.DateOfBirth,
 		Sex:              string(member.Sex),
 		Relationship:     string(member.Relationship),
 		EmploymentStatus: string(member.EmploymentStatus),
 		SchoolLevel:      string(member.SchoolLevel),
-		// CreatedAt:        member.CreatedAt,
-		// UpdatedAt:        member.UpdatedAt,
 	}
 }
 

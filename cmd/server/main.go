@@ -30,13 +30,21 @@ func main() {
 
 	db.AutoMigrate(&models.Applicant{}, &models.HouseholdMember{})
 
+	// instantiate repositories, services, handlers 
 	applicantRepo := repository.NewGormApplicantRepository(db)
 	householdMemberRepo := repository.NewGormHouseholdMemberRepository(db)
+	schemeRepo := repository.NewGormSchemeRepository(db)
+	schemeCriteriaRepo := repository.NewGormSchemeCriteriaRepository(db)
+	benefitRepo := repository.NewGormBenefitRepository(db)
 	
 	applicantService := services.NewApplicantService(applicantRepo)
 	householdMemberService := services.NewHouseholdMemberService(householdMemberRepo)
+	schemeService := services.NewSchemeService(schemeRepo)
+	schemeCriteriaService := services.NewSchemeCriteriaService(schemeCriteriaRepo)
+	benefitService := services.BenefitService(benefitRepo)
 
 	applicationHandler := handlers.NewApplicantService(applicantService, householdMemberService)
+	schemeHandler := handlers.NewSchemeHandler(schemeService, schemeCriteriaService, benefitService)
 
 	// set up router 
 	r := mux.NewRouter()
@@ -45,6 +53,7 @@ func main() {
 	r.HandleFunc("/api/health", handlers.HealthCheckHandler).Methods("GET")
 	r.HandleFunc("/api/applicants", applicationHandler.ListApplicants).Methods("GET")
 	r.HandleFunc("/api/applicants", applicationHandler.CreateApplicant).Methods("POST")
+	r.HandleFunc("/api/schemes", schemeHandler.GetAllSchemes).Methods("GET")
 
 	r.Use(middleware.LoggingMiddleware)
 

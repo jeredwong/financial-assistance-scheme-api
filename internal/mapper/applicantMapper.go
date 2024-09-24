@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 )
@@ -9,9 +10,9 @@ func ApplicantDTOToModel(applicantDTO dto.ApplicantDTO) models.Applicant{
     applicant := models.Applicant{
 		Name:             applicantDTO.Name,
         DateOfBirth:      applicantDTO.DateOfBirth,
-        Sex:              models.Sex(applicantDTO.Sex),
-        MaritalStatus:    models.MaritalStatus(applicantDTO.MaritalStatus),
-        EmploymentStatus: models.EmploymentStatus(applicantDTO.EmploymentStatus),
+        Sex:              constants.Sex(applicantDTO.Sex),
+        MaritalStatus:    constants.MaritalStatus(applicantDTO.MaritalStatus),
+        EmploymentStatus: constants.EmploymentStatus(applicantDTO.EmploymentStatus),
     }
     return applicant
 }
@@ -32,17 +33,6 @@ func ApplicantModelToDTO(applicant models.Applicant) dto.ApplicantDTO {
         MaritalStatus:    string(applicant.MaritalStatus),
         EmploymentStatus: string(applicant.EmploymentStatus),
     }
-    // householdMembers, err := services.HouseholdMemberService.GetHouseholdMembersByApplicantId(applicant.ID)
-    // // TODO: implement more graceful error handling 
-    // if err != nil {
-    //     log.Printf("error retrieving household members")
-
-    // }
-    // var householdMemberDTOs []dto.HouseholdMemberDTO
-    // for _, householdMember := range(householdMembers) {
-    //     householdMemberDTOs = append(householdMemberDTOs, mapper.HouseholdMemberModelToDTO(householdMember))
-    // }
-    // applicantDTO.HouseholdMembers = householdMemberDTOs
     return applicantDTO
 }
 

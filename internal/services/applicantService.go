@@ -5,7 +5,6 @@ import (
 	"math"
 	"time"
 
-	// "github.com/google/uuid"
 	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
@@ -15,13 +14,11 @@ import (
 type ApplicantService interface {
 	ListApplicants(query dto.PaginationQuery) (dto.PaginatedResponse, error)
 	CreateApplicant(applicant *models.Applicant) error
-	// GetApplicantById(id uuid.UUID) (*models.Applicant, error)
 }
 
 type applicantService struct {
 	applicantRepo repository.ApplicantRepository
 }
-
 
 func NewApplicantService(applicantRepo repository.ApplicantRepository) ApplicantService {
 	return &applicantService{applicantRepo: applicantRepo}
@@ -44,21 +41,6 @@ func (s *applicantService) ListApplicants(query dto.PaginationQuery) (dto.Pagina
 		return dto.PaginatedResponse{}, err
 	}
 
-	// var applicantDTOs []dto.ApplicantDTO
-	// for _, applicant := range(applicants) {
-	// 	applicantDTO := mapper.ApplicantModelToDTO(applicant)
-	// 	householdMembers, err := s.householdMemberRepo.GetByApplicantId(applicant.ID)
-	// 	if err != nil { 
-	// 		return dto.PaginatedResponse{}, err
-	// 	}
-	// 	var householdMemberDTOs []dto.HouseholdMemberDTO
-	// 	for _, householdMember := range(householdMembers) {
-	// 		householdMemberDTOs = append(householdMemberDTOs, mapper.HouseholdMemberModelToDTO(householdMember))
-	// 	}
-	// 	applicantDTO.HouseholdMembers = householdMemberDTOs
-	// 	applicantDTOs = append(applicantDTOs, applicantDTO)
-	// }
-
 	totalPages := int(math.Ceil(float64(totalItems) / float64(query.PageSize)))
 
 	return dto.PaginatedResponse{
@@ -76,10 +58,6 @@ func (s *applicantService) CreateApplicant(applicant *models.Applicant) error {
 	}
 	return s.applicantRepo.Create(applicant)
 }
-
-// func (s *applicantService) GetApplicantById(id uuid.UUID) (*models.Applicant, error) {
-// 	return  s.applicantRepo.GetById(id)
-// }
 
 // helper functions
 func validateApplicant(applicant *models.Applicant) error {

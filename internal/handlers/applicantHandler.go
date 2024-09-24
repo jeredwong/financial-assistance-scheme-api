@@ -11,8 +11,6 @@ import (
 	"github.com/jeredwong/financial-scheme-manager/internal/mapper"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 	"github.com/jeredwong/financial-scheme-manager/internal/services"
-	// "github.com/google/uuid"
-	// "github.com/gorilla/mux"
 )
 
 type ApplicantHandler struct {
@@ -26,23 +24,6 @@ func NewApplicantService(applicantService services.ApplicantService, householdMe
 		householdMemberService: householdMemberService,
 	}
 }
-
-// func (h *ApplicantHandler) GetApplicant(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := uuid.Parse(vars["id"])
-// 	if err != nil {
-// 		http.Error(w, "Invalid applicant ID", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	applicant, err := h.applicantService.GetApplicantById(id)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// 	writeJSON(w, applicant)
-// }
 
 func (h *ApplicantHandler) ListApplicants(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
