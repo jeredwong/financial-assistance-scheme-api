@@ -28,17 +28,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&models.Applicant{})
+	db.AutoMigrate(&models.Applicant{}, &models.HouseholdMember{})
 
 	applicantRepo := repository.NewGormApplicantRepository(db)
+	householdMemberRepo := repository.NewGormHouseholdMemberRepository(db)
 	
 	applicantService := services.NewApplicantService(applicantRepo)
+	householdMemberService := services.NewHouseholdMemberService(householdMemberRepo)
 
-	applicationHandler := handlers.NewApplicantService(applicantService)
+	applicationHandler := handlers.NewApplicantService(applicantService, householdMemberService)
 
 	// set up router 
 	r := mux.NewRouter()
 
+	// routes 
 	r.HandleFunc("/api/health", handlers.HealthCheckHandler).Methods("GET")
 	r.HandleFunc("/api/applicants", applicationHandler.ListApplicants).Methods("GET")
 	r.HandleFunc("/api/applicants", applicationHandler.CreateApplicant).Methods("POST")

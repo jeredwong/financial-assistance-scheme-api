@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
+	// "gorm.io/gorm"
 )
 
 type EmploymentStatus string
@@ -45,29 +45,31 @@ const (
 )
 
 type Applicant struct {
-	gorm.Model
-	ID					uuid.UUID
-	Name				string
-	DateOfBirth			time.Time
-	Sex					Sex
-	MaritalStatus		MaritalStatus
-	EmploymentStatus	EmploymentStatus
-	CreatedAt			time.Time
-	UpdatedAt			time.Time
-	HouseholdMembers	[]HouseholdMember
+	// gorm.Model
+	ID               uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Name             string    `gorm:"type:varchar(255);not null"`
+	DateOfBirth      time.Time `gorm:"type:date;not null"`
+	Sex              Sex       `gorm:"type:sex;not null"`
+	MaritalStatus    MaritalStatus    `gorm:"type:marital_status;not null"`
+	EmploymentStatus EmploymentStatus `gorm:"type:employment_status;not null"`
+	CreatedAt        time.Time        `gorm:"default:CURRENT_TIMESTAMP"`
+	UpdatedAt        time.Time        `gorm:"default:CURRENT_TIMESTAMP"`
+	// HouseholdMembers []HouseholdMember `gorm:"foreignKey:ApplicantID"`
 	// Applications		[]Application
 }
 
 type HouseholdMember struct {
-	ID					uuid.UUID
-	ApplicantID			uuid.UUID
-	Name				string
-	DateOfBirth			time.Time
-	Sex					Sex
-	Relationship		Relationship
-	EmploymentStatus	EmploymentStatus
-	SchoolLevel			SchoolLevel
-	CreatedAt			time.Time
-	UpdatedAt			time.Time
-	// Applicant			Applicant
+	// gorm.Model
+	ID               uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	ApplicantID      uuid.UUID `gorm:"type:uuid;not null"`
+	Name             string    `gorm:"type:varchar(255);not null"`
+	DateOfBirth      time.Time `gorm:"type:date;not null"`
+	Sex              Sex       `gorm:"type:sex;not null"`
+	Relationship     Relationship     `gorm:"type:relationship;not null"`
+	EmploymentStatus EmploymentStatus `gorm:"type:employment_status;not null"`
+	SchoolLevel      SchoolLevel      `gorm:"type:school_level;not null"`
+	CreatedAt        time.Time        `gorm:"default:CURRENT_TIMESTAMP"`
+	UpdatedAt        time.Time        `gorm:"default:CURRENT_TIMESTAMP"`
+
+	// Applicant Applicant `gorm:"foreignKey:ApplicantID"`
 }

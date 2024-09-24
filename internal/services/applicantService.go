@@ -22,6 +22,7 @@ type applicantService struct {
 	applicantRepo repository.ApplicantRepository
 }
 
+
 func NewApplicantService(applicantRepo repository.ApplicantRepository) ApplicantService {
 	return &applicantService{applicantRepo: applicantRepo}
 }
@@ -42,6 +43,21 @@ func (s *applicantService) ListApplicants(query dto.PaginationQuery) (dto.Pagina
 	if err != nil {
 		return dto.PaginatedResponse{}, err
 	}
+
+	// var applicantDTOs []dto.ApplicantDTO
+	// for _, applicant := range(applicants) {
+	// 	applicantDTO := mapper.ApplicantModelToDTO(applicant)
+	// 	householdMembers, err := s.householdMemberRepo.GetByApplicantId(applicant.ID)
+	// 	if err != nil { 
+	// 		return dto.PaginatedResponse{}, err
+	// 	}
+	// 	var householdMemberDTOs []dto.HouseholdMemberDTO
+	// 	for _, householdMember := range(householdMembers) {
+	// 		householdMemberDTOs = append(householdMemberDTOs, mapper.HouseholdMemberModelToDTO(householdMember))
+	// 	}
+	// 	applicantDTO.HouseholdMembers = householdMemberDTOs
+	// 	applicantDTOs = append(applicantDTOs, applicantDTO)
+	// }
 
 	totalPages := int(math.Ceil(float64(totalItems) / float64(query.PageSize)))
 
