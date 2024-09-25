@@ -8,6 +8,7 @@ import (
 
 type BenefitService interface {
 	GetBenefitsBySchemeId(schemeId uuid.UUID) ([]models.Benefit, error)
+	GetBenefitsByCriteriaId(criteriaId uuid.UUID) ([]models.Benefit, error)
 }
 
 type benefitService struct {
@@ -20,4 +21,8 @@ func NewBenefitService (benefitRepo repository.BenefitRepository) *benefitServic
 
 func (s *benefitService) GetBenefitsBySchemeId(schemeId uuid.UUID) ([]models.Benefit, error) {
 	return s.benefitRepo.GetBenefitsBySchemeId(schemeId)
+}
+
+func (s *benefitService) GetBenefitsByCriteriaId(criteriaId uuid.UUID) ([]models.Benefit, error) {
+	return s.benefitRepo.GetBenefitsByCriteriaId(criteriaId)
 }

@@ -7,6 +7,7 @@ import (
 
 func BenefitDTOToModel(benefitDTO dto.BenefitDTO) models.Benefit {
 	return models.Benefit{
+		ID: benefitDTO.Id,
 		Name: benefitDTO.Name,
 		Description: benefitDTO.Description,
 		Amount: benefitDTO.Amount,
@@ -23,6 +24,7 @@ func BenefitDTOsToModels(benefitDTOs []dto.BenefitDTO) []models.Benefit {
 
 func BenefitModelToDTO(benefit models.Benefit) dto.BenefitDTO {
 	return dto.BenefitDTO{
+		Id: benefit.ID,
 		Name: benefit.Name,
 		Description: benefit.Description,
 		Amount: benefit.Amount,

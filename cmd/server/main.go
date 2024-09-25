@@ -36,24 +36,30 @@ func main() {
 	schemeRepo := repository.NewGormSchemeRepository(db)
 	schemeCriteriaRepo := repository.NewGormSchemeCriteriaRepository(db)
 	benefitRepo := repository.NewGormBenefitRepository(db)
+	applicationRepo := repository.NewGormApplicationRepository(db)
 	
 	applicantService := services.NewApplicantService(applicantRepo)
 	householdMemberService := services.NewHouseholdMemberService(householdMemberRepo)
 	schemeService := services.NewSchemeService(schemeRepo)
 	schemeCriteriaService := services.NewSchemeCriteriaService(schemeCriteriaRepo)
-	benefitService := services.BenefitService(benefitRepo)
+	benefitService := services.NewBenefitService(benefitRepo)
+	applicationService := services.NewApplicationService(applicationRepo)
 
-	applicationHandler := handlers.NewApplicantService(applicantService, householdMemberService)
+	applicantHandler := handlers.NewApplicantHandler(applicantService, householdMemberService)
 	schemeHandler := handlers.NewSchemeHandler(schemeService, schemeCriteriaService, benefitService)
+	applicationHandler := handlers.NewApplicationHandler(applicationService, applicantService, schemeService)
 
 	// set up router 
 	r := mux.NewRouter()
 
 	// routes 
 	r.HandleFunc("/api/health", handlers.HealthCheckHandler).Methods("GET")
-	r.HandleFunc("/api/applicants", applicationHandler.ListApplicants).Methods("GET")
-	r.HandleFunc("/api/applicants", applicationHandler.CreateApplicant).Methods("POST")
+	r.HandleFunc("/api/applicants", applicantHandler.GetAllApplicants).Methods("GET")
+	r.HandleFunc("/api/applicants", applicantHandler.CreateApplicant).Methods("POST")
 	r.HandleFunc("/api/schemes", schemeHandler.GetAllSchemes).Methods("GET")
+	// r.HandleFunc("/api/schemes/eligible", schemeHandler.GetEligibleSchemes).Methods("GET")
+	r.HandleFunc("/api/applications", applicationHandler.GetAllApplications).Methods("GET")
+	r.HandleFunc("/api/applications", applicationHandler.CreateApplication).Methods("POST")
 
 	r.Use(middleware.LoggingMiddleware)
 

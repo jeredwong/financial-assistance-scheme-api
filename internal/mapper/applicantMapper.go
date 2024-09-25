@@ -8,6 +8,7 @@ import (
 
 func ApplicantDTOToModel(applicantDTO dto.ApplicantDTO) models.Applicant{
     applicant := models.Applicant{
+        ID:               applicantDTO.Id,
 		Name:             applicantDTO.Name,
         DateOfBirth:      applicantDTO.DateOfBirth,
         Sex:              constants.Sex(applicantDTO.Sex),
@@ -27,6 +28,7 @@ func ApplicantDTOsToModels(applicantDTOs []dto.ApplicantDTO) []models.Applicant{
 
 func ApplicantModelToDTO(applicant models.Applicant) dto.ApplicantDTO {
     applicantDTO := dto.ApplicantDTO {
+        Id:               applicant.ID,
         Name:             applicant.Name,
         DateOfBirth:      applicant.DateOfBirth,
         Sex:              string(applicant.Sex),

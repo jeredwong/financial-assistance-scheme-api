@@ -18,14 +18,14 @@ type ApplicantHandler struct {
 	householdMemberService services.HouseholdMemberService
 }
 
-func NewApplicantService(applicantService services.ApplicantService, householdMemberService services.HouseholdMemberService) *ApplicantHandler {
+func NewApplicantHandler(applicantService services.ApplicantService, householdMemberService services.HouseholdMemberService) *ApplicantHandler {
 	return &ApplicantHandler{
 		applicantService: applicantService, 
 		householdMemberService: householdMemberService,
 	}
 }
 
-func (h *ApplicantHandler) ListApplicants(w http.ResponseWriter, r *http.Request) {
+func (h *ApplicantHandler) GetAllApplicants(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	page, err := strconv.Atoi(query.Get("page"))
 	if err != nil || page < 1 {
@@ -44,7 +44,7 @@ func (h *ApplicantHandler) ListApplicants(w http.ResponseWriter, r *http.Request
         PageSize: pageSize,
 	}
 
-	response, err := h.applicantService.ListApplicants(paginationQuery)
+	response, err := h.applicantService.GetAllApplicants(paginationQuery)
 
 	if err != nil {
 		http.Error(w, "Failed to fetch applicants", http.StatusInternalServerError) 
@@ -96,8 +96,8 @@ func (h *ApplicantHandler) CreateApplicant(w http.ResponseWriter, r *http.Reques
 	}
 
 	for _, householdMemberDTO := range(applicantDTO.HouseholdMembers) {
-		log.Printf("adding householdMember...")
 		householdMember := mapper.HouseholdMemberDTOToModel(householdMemberDTO)
+		log.Printf("adding householdMember...")
 		householdMember.ApplicantID = applicant.ID
 		err := h.householdMemberService.CreateHouseholdMember(&householdMember)
 		if err != nil {

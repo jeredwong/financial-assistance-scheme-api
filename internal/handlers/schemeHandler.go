@@ -69,14 +69,23 @@ func (h *SchemeHandler) GetAllSchemes(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to fetch scheme criteria", http.StatusInternalServerError)
 			return
 		}
-		schemeDTO.Criteria = mapper.SchemeCriteriaModelsToDTOs(criteria)
 
-		benefits, err := h.benefitService.GetBenefitsBySchemeId(scheme.ID)
-		if err != nil {
-			http.Error(w, "Failed to fetch scheme benefits", http.StatusInternalServerError)
-			return
+		criteriaDTOs := mapper.SchemeCriteriaModelsToDTOs(criteria)
+		schemeDTO.Criteria = criteriaDTOs
+
+		for j, criteriaDTO := range(schemeDTO.Criteria) {
+
+			benefits, err := h.benefitService.GetBenefitsByCriteriaId(criteriaDTO.Id)
+			if err != nil {
+				http.Error(w, "Failed to fetch scheme benefits", http.StatusInternalServerError)
+				return
+			}
+			criteriaDTO.Benefits = mapper.BenefitModelsToDTOs(benefits)
+
+			criteriaDTOs[j] = criteriaDTO
+
 		}
-		schemeDTO.Benefits = mapper.BenefitModelsToDTOs(benefits)
+
 		schemeDTOs[i] = schemeDTO
 	}
 	response.Data = schemeDTOs
@@ -84,3 +93,7 @@ func (h *SchemeHandler) GetAllSchemes(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	writeJSON(w, response)
 }
+
+// func (h *SchemeHandler) GetEligibleSchemes(w http.ResponseWriter, r *http.Request) {
+// 	query := 
+// }

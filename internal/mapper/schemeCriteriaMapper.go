@@ -8,11 +8,10 @@ import (
 
 func SchemeCriteriaDTOToModel(criteriaDTO dto.SchemeCriteriaDTO) models.SchemeCriteria {
 	return models.SchemeCriteria{
+		ID: criteriaDTO.Id,
 		MaritalStatus: constants.MaritalStatus(criteriaDTO.MaritalStatus),
 		EmploymentStatus: constants.EmploymentStatus(criteriaDTO.EmploymentStatus),
 		HouseholdStatus: criteriaDTO.HouseholdStatus,
-		// CriteriaType: criteriaDTO.CriteriaType,
-		// CriteriaValue: criteriaDTO.CriteriaValue,
 	}
 }
 
@@ -26,11 +25,10 @@ func SchemeCriteriaDTOsToModels(criteriaDTOs []dto.SchemeCriteriaDTO) []models.S
 
 func SchemeCriteriaModelToDTO(criteria models.SchemeCriteria) dto.SchemeCriteriaDTO {
 	return dto.SchemeCriteriaDTO{
+		Id: criteria.ID,
 		MaritalStatus: string(criteria.MaritalStatus),
 		EmploymentStatus: string(criteria.MaritalStatus),
 		HouseholdStatus: criteria.HouseholdStatus,
-		// CriteriaType: string(criteria.CriteriaType),
-		// CriteriaValue: criteria.CriteriaValue,
 	}
 }
 

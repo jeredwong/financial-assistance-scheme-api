@@ -8,6 +8,7 @@ import (
 
 func HouseholdMemberDTOToModel(memberDTO dto.HouseholdMemberDTO) models.HouseholdMember {
 	return models.HouseholdMember{
+		ID: memberDTO.Id,
 		Name:             memberDTO.Name,
 		DateOfBirth:      memberDTO.DateOfBirth,
 		Sex:              constants.Sex(memberDTO.Sex),
@@ -27,6 +28,7 @@ func HouseholdMemberDTOstoModels(memberDTOs []dto.HouseholdMemberDTO) []models.H
 
 func HouseholdMemberModelToDTO(member models.HouseholdMember) dto.HouseholdMemberDTO {
 	return dto.HouseholdMemberDTO{
+		Id: member.ID,
 		Name:             member.Name,
 		DateOfBirth:      member.DateOfBirth,
 		Sex:              string(member.Sex),

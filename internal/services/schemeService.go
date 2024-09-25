@@ -3,13 +3,16 @@ package services
 import (
 	"math"
 
+	"github.com/google/uuid"
 	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
+	"github.com/jeredwong/financial-scheme-manager/internal/models"
 	"github.com/jeredwong/financial-scheme-manager/internal/repository"
 )
 
 type SchemeService interface {
 	GetAllSchemes(query dto.PaginationQuery) (dto.PaginatedResponse, error)
+	GetSchemeById(schemeId uuid.UUID) (models.Scheme, error)
 }
 
 type schemeService struct {
@@ -45,4 +48,8 @@ func (s *schemeService) GetAllSchemes(query dto.PaginationQuery) (dto.PaginatedR
 		Page:		query.Page,
 		PageSize: 	query.PageSize,
 	}, nil
+}
+
+func (s *schemeService) GetSchemeById(schemeId uuid.UUID) (models.Scheme, error) {
+	return s.schemeRepo.GetSchemeById(schemeId)
 }

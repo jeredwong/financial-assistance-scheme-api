@@ -21,3 +21,4 @@ func NewSchemeCriteriaService (schemeCriteriaRepo repository.SchemeCriteriaRepos
 func (s *schemeCriteriaService) GetSchemeCriteriaBySchemeId(schemeId uuid.UUID) ([]models.SchemeCriteria, error) {
 	return s.schemeCriteriaRepo.GetSchemeCriteriaBySchemeId(schemeId)
 }
+

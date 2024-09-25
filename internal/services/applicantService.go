@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
@@ -12,7 +13,8 @@ import (
 )
 
 type ApplicantService interface {
-	ListApplicants(query dto.PaginationQuery) (dto.PaginatedResponse, error)
+	GetAllApplicants(query dto.PaginationQuery) (dto.PaginatedResponse, error)
+	GetApplicantById(uuid.UUID) (models.Applicant, error)
 	CreateApplicant(applicant *models.Applicant) error
 }
 
@@ -24,7 +26,7 @@ func NewApplicantService(applicantRepo repository.ApplicantRepository) Applicant
 	return &applicantService{applicantRepo: applicantRepo}
 }
 
-func (s *applicantService) ListApplicants(query dto.PaginationQuery) (dto.PaginatedResponse, error) {
+func (s *applicantService) GetAllApplicants(query dto.PaginationQuery) (dto.PaginatedResponse, error) {
 	// default values
 	if query.Page == 0 {
 		query.Page = constants.DefaultPage
@@ -36,7 +38,7 @@ func (s *applicantService) ListApplicants(query dto.PaginationQuery) (dto.Pagina
 		query.PageSize = constants.MaxPageSize
 	}
 
-	applicants, totalItems, err := s.applicantRepo.List(query.Page, query.PageSize)
+	applicants, totalItems, err := s.applicantRepo.GetAllApplicants(query.Page, query.PageSize)
 	if err != nil {
 		return dto.PaginatedResponse{}, err
 	}
@@ -52,11 +54,15 @@ func (s *applicantService) ListApplicants(query dto.PaginationQuery) (dto.Pagina
     }, nil
 }
 
+func (s *applicantService) GetApplicantById(applicantId uuid.UUID) (models.Applicant, error) {
+	return s.applicantRepo.GetApplicantById(applicantId)
+}
+
 func (s *applicantService) CreateApplicant(applicant *models.Applicant) error {
 	if err := validateApplicant(applicant); err != nil {
 		return err
 	}
-	return s.applicantRepo.Create(applicant)
+	return s.applicantRepo.CreateApplicant(applicant)
 }
 
 // helper functions

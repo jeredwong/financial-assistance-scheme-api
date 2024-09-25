@@ -1,8 +1,13 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type HouseholdMemberDTO struct {
+	Id					uuid.UUID				`json:"id"`
 	Name 				string					`json:"name"`
 	DateOfBirth 		time.Time				`json:"date_of_birth"`
 	Sex 				string 					`json:"sex"`

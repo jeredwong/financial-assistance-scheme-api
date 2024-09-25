@@ -22,11 +22,11 @@ func NewGormSchemeCriteriaRepository(db *gorm.DB) SchemeCriteriaRepository {
 }
 
 func (r *gormSchemeCriteriaRepository) GetSchemeCriteriaBySchemeId(schemeId uuid.UUID) ([]models.SchemeCriteria, error) {
-	var schemeCriterion []models.SchemeCriteria 
-	result := r.db.Where("scheme_id = ?", schemeId).Find(&schemeCriterion)
+	var schemeCriteria []models.SchemeCriteria 
+	result := r.db.Where("scheme_id = ?", schemeId).Find(&schemeCriteria)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	log.Printf("retrieved %d scheme criteria", len(schemeCriterion))
-	return schemeCriterion, nil
+	log.Printf("retrieved %d scheme criteria", len(schemeCriteria))
+	return schemeCriteria, nil
 }
