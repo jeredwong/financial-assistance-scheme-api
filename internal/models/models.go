@@ -44,6 +44,7 @@ type Scheme struct {
 	Description	string		`gorm:"type:text"`
 	CreatedAt	time.Time	`gorm:"default:CURRENT_TIMESTAMP"`
 	UpdatedAt	time.Time	`gorm:"default:CURRENT_TIMESTAMP"` 
+	Criteria []SchemeCriteria `gorm:"foreignKey:SchemeID"`
 }
 
 type SchemeCriteria struct {
@@ -54,6 +55,7 @@ type SchemeCriteria struct {
 	HouseholdStatus		json.RawMessage				`gorm:"type:json"`
 	CreatedAt			time.Time					`gorm:"default:CURRENT_TIMESTAMP"`
 	UpdatedAt			time.Time					`gorm:"default:CURRENT_TIMESTAMP"`
+	Benefits []Benefit `gorm:"foreignKey:CriteriaID"`
 }
 
 type Benefit struct {

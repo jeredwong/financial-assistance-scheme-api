@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+	"log"
 	"math"
 
 	"github.com/google/uuid"
@@ -13,14 +15,24 @@ import (
 type SchemeService interface {
 	GetAllSchemes(query dto.PaginationQuery) (dto.PaginatedResponse, error)
 	GetSchemeById(schemeId uuid.UUID) (models.Scheme, error)
+	GetEligibleSchemesForApplicant(applicantId uuid.UUID) ([]models.Scheme, error)
 }
 
 type schemeService struct {
 	schemeRepo repository.SchemeRepository
+	applicantRepo repository.ApplicantRepository
+	householdMemberRepo repository.HouseholdMemberRepository
 }
 
-func NewSchemeService(schemeRepo repository.SchemeRepository) SchemeService{
-	return &schemeService{schemeRepo: schemeRepo}
+func NewSchemeService(
+	schemeRepo repository.SchemeRepository,
+	applicantRepo repository.ApplicantRepository,
+	householdMemberRepo repository.HouseholdMemberRepository) SchemeService{
+	return &schemeService{
+		schemeRepo: schemeRepo,
+		applicantRepo: applicantRepo,
+		householdMemberRepo: householdMemberRepo,
+	}
 }
 
 func (s *schemeService) GetAllSchemes(query dto.PaginationQuery) (dto.PaginatedResponse, error) {
@@ -52,4 +64,24 @@ func (s *schemeService) GetAllSchemes(query dto.PaginationQuery) (dto.PaginatedR
 
 func (s *schemeService) GetSchemeById(schemeId uuid.UUID) (models.Scheme, error) {
 	return s.schemeRepo.GetSchemeById(schemeId)
+}
+
+func (s *schemeService) GetEligibleSchemesForApplicant(applicantId uuid.UUID) ([]models.Scheme, error)  {
+	applicant, err := s.applicantRepo.GetApplicantById(applicantId)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching applicant: %w", err)
+	}
+	log.Printf("getting eligible schemes for applicant: %s", applicantId)
+
+	householdMembers, err := s.householdMemberRepo.GetByApplicantId(applicantId)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching household members: %w", err)
+	}
+
+	eligibleSchemes, err := s.schemeRepo.GetEligibleSchemesForApplicant(applicant, householdMembers)
+	if err != nil {
+		return nil, err
+	}
+
+	return eligibleSchemes, nil
 }

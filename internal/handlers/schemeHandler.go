@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/mapper"
@@ -48,7 +49,6 @@ func (h *SchemeHandler) GetAllSchemes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := h.schemeService.GetAllSchemes(paginationQuery)
-
 	if err != nil {
 		http.Error(w, "Failed to fetch schemes", http.StatusInternalServerError)
 		return
@@ -90,10 +90,25 @@ func (h *SchemeHandler) GetAllSchemes(w http.ResponseWriter, r *http.Request) {
 	}
 	response.Data = schemeDTOs
 
-	w.WriteHeader(http.StatusCreated)
 	writeJSON(w, response)
 }
 
-// func (h *SchemeHandler) GetEligibleSchemes(w http.ResponseWriter, r *http.Request) {
-// 	query := 
-// }
+func (h *SchemeHandler) GetEligibleSchemesForApplicant(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	applicantIdStr := query.Get("applicant")
+	applicantId, err := uuid.Parse(applicantIdStr)
+	if err != nil {
+		http.Error(w, "Invalid applicant ID", http.StatusBadRequest)
+		return
+	}
+	eligibleSchemes, err := h.schemeService.GetEligibleSchemesForApplicant(applicantId)
+	if err != nil {
+		http.Error(w, "Failed to retrieve eligible schemes", http.StatusInternalServerError)
+		return
+	}
+
+	schemeDTOs := mapper.SchemeModelsToDTOs(eligibleSchemes)
+
+	w.Header().Set("Content-Type", "application/json")
+	writeJSON(w, schemeDTOs)
+}

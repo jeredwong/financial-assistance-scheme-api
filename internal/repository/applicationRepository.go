@@ -1,14 +1,17 @@
 package repository
 
 import (
+	"errors"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 	"gorm.io/gorm"
 )
 
 type ApplicationRepository interface {
 	GetAllApplications(page, pageSize int) ([]models.Application, int64, error)
+	GetApplicantById(applicantId uuid.UUID) (models.Applicant, error)
 	CreateApplication(application *models.Application) error
 }
 
@@ -41,6 +44,18 @@ func (r *gormApplicationRepository) GetAllApplications(page, pageSize int) ([]mo
 	log.Printf("retrieved %d applications", len(applications))
 
     return applications, totalItems, nil
+}
+
+func (r *gormApplicationRepository) GetApplicantById(applicantId uuid.UUID) (models.Applicant, error) {
+	var applicant models.Applicant
+	result := r.db.First(&applicant, "id = ?", applicantId)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return models.Applicant{}, errors.New("applicant not found")
+		}
+		return models.Applicant{}, result.Error
+	}
+	return applicant, nil
 }
 
 func (r *gormApplicationRepository) CreateApplication(application *models.Application) error {

@@ -59,63 +59,79 @@ func (r *gormSchemeRepository) GetSchemeById(schemeId uuid.UUID) (models.Scheme,
     return scheme, nil
 }
 
-func (r *gormSchemeRepository) GetEligibleSchemesForApplicant (applicant models.Applicant, householdMembers []models.HouseholdMember) ([]models.Scheme, error) {
-	var eligibleSchemes []models.Scheme
+func (r *gormSchemeRepository) GetEligibleSchemesForApplicant(applicant models.Applicant, householdMembers []models.HouseholdMember) ([]models.Scheme, error) {
+	var schemes []models.Scheme
+    
+    // Fetch all schemes with their criteria
+    err := r.db.Preload("Criteria").Find(&schemes).Error
+    if err != nil {
+        return nil, fmt.Errorf("error fetching schemes: %w", err)
+    }
 
-	query := r.db.Distinct("schemes.*").
-		Joins("JOIN scheme_criteria ON schemes.id = scheme_criteria.scheme_id").
-		Where("(scheme_criteria.marital_status IS NULL OR scheme_criteria.marital_status = ?) AND " +
-		"(scheme_criteria.employment_status IS NULL OR scheme_criteria.employement_status = ?)",
-		applicant.MaritalStatus, applicant.EmploymentStatus)
+    var eligibleSchemes []models.Scheme
+    for _, scheme := range schemes {
+        if isSchemeEligible(scheme, applicant, householdMembers) {
+            eligibleSchemes = append(eligibleSchemes, scheme)
+        }
+    }
 
-	err := query.Find(&eligibleSchemes).Error
-	if err != nil {
-		return nil, fmt.Errorf("error fetching eligible schemes: %w", err)
-	}
-
-	var finalEligibleSchemes []models.Scheme
-	for _, scheme := range(eligibleSchemes) {
-		var criteria models.SchemeCriteria
-		if err := r.db.Where("scheme_id = ?", scheme.ID).First(&criteria).Error; err != nil {
-			continue
-		}
-
-		if isEligibleBasedOnHouseholdStatus(householdMembers, criteria.HouseholdStatus) {
-			finalEligibleSchemes = append(finalEligibleSchemes, scheme)
-		}
-	}
-
-	return finalEligibleSchemes, nil
+    return eligibleSchemes, nil
 }
 
-// helper functions 
-func isEligibleBasedOnHouseholdStatus(householdMembers []models.HouseholdMember, householdStatus json.RawMessage) bool {
-	var criteria map[string]string
-	if err := json.Unmarshal(householdStatus, &criteria); err != nil {
-		log.Printf("Failed to read household status")
-		return false
-	}
-	
-	// key: criteria type; value: criteria value 
-	for key, value := range(criteria) {
-		eligible := false
-		// for each criteria, check if ANY member meets it 
-		for _, member := range(householdMembers) {
-			eligible = true
-			switch key {
-			case "schoolLevel":
-				if string(member.SchoolLevel) != value {
-					eligible = false
-					continue
-				}
-			}
-			if eligible {
-				break
-			}
-		}
-		if !eligible {
-			return false // if any criterion is not met, the scheme is not eligible
-		}
-	}
-	return true
+// helper functions
+func isSchemeEligible(scheme models.Scheme, applicant models.Applicant, householdMembers []models.HouseholdMember) bool {
+    for _, criteria := range scheme.Criteria {
+        if isCriteriamet(criteria, applicant, householdMembers) {
+            return true
+        }
+    }
+    return false
+}
+
+func isCriteriamet(criteria models.SchemeCriteria, applicant models.Applicant, householdMembers []models.HouseholdMember) bool {
+    // Check marital status
+    if criteria.MaritalStatus != "" && criteria.MaritalStatus != applicant.MaritalStatus {
+        return false
+    }
+
+    // Check employment status
+    if criteria.EmploymentStatus != "" && criteria.EmploymentStatus != applicant.EmploymentStatus {
+        return false
+    }
+
+    // Check household status
+    if criteria.HouseholdStatus != nil {
+        var householdCriteria map[string]string
+        if err := json.Unmarshal(criteria.HouseholdStatus, &householdCriteria); err != nil {
+            return false
+        }
+        if !isHouseholdEligible(householdMembers, householdCriteria) {
+            return false
+        }
+    }
+
+    return true
+}
+
+func isHouseholdEligible(householdMembers []models.HouseholdMember, criteria map[string]string) bool {
+    for key, value := range criteria {
+        eligible := false
+        for _, member := range householdMembers {
+            switch key {
+            case "schoolLevel":
+                if string(member.SchoolLevel) == value {
+                    eligible = true
+                    break
+                }
+            // Add more cases here for other household status criteria
+            }
+            if eligible {
+                break
+            }
+        }
+        if !eligible {
+            return false
+        }
+    }
+    return true
 }

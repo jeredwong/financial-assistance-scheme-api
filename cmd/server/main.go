@@ -41,7 +41,7 @@ func main() {
 	
 	applicantService := services.NewApplicantService(applicantRepo)
 	householdMemberService := services.NewHouseholdMemberService(householdMemberRepo)
-	schemeService := services.NewSchemeService(schemeRepo)
+	schemeService := services.NewSchemeService(schemeRepo, applicantRepo, householdMemberRepo)
 	schemeCriteriaService := services.NewSchemeCriteriaService(schemeCriteriaRepo)
 	benefitService := services.NewBenefitService(benefitRepo)
 	applicationService := services.NewApplicationService(applicationRepo)
@@ -58,7 +58,7 @@ func main() {
 	r.HandleFunc("/api/applicants", applicantHandler.GetAllApplicants).Methods("GET")
 	r.HandleFunc("/api/applicants", applicantHandler.CreateApplicant).Methods("POST")
 	r.HandleFunc("/api/schemes", schemeHandler.GetAllSchemes).Methods("GET")
-	// r.HandleFunc("/api/schemes/eligible", schemeHandler.GetEligibleSchemes).Methods("GET")
+	r.HandleFunc("/api/schemes/eligible", schemeHandler.GetEligibleSchemesForApplicant).Methods("GET")
 	r.HandleFunc("/api/applications", applicationHandler.GetAllApplications).Methods("GET")
 	r.HandleFunc("/api/applications", applicationHandler.CreateApplication).Methods("POST")
 
