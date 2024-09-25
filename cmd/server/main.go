@@ -15,6 +15,7 @@ import (
 	"github.com/jeredwong/financial-scheme-manager/internal/repository"
 	"github.com/jeredwong/financial-scheme-manager/internal/services"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -63,6 +64,21 @@ func main() {
 
 	r.Use(middleware.LoggingMiddleware)
 
+	// swagger
+    swagger, err := loadOpenAPISpec("./api/swagger/swagger.yaml")
+    if err != nil {
+        log.Fatalf("Failed to load OpenAPI spec: %v", err)
+    }
+    err = swagger.Validate(context.Background())
+    if err != nil {
+        log.Fatalf("Invalid OpenAPI spec: %v", err)
+    }
+    fs := http.FileServer(http.Dir("./swagger-ui"))
+    r.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", fs))
+    r.HandleFunc("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "./api/swagger/swagger.yaml")
+    })
+
 	srv := &http.Server{
 		Addr:			":8080",
 		Handler:		r,
@@ -92,4 +108,15 @@ func main() {
 	}
 
 	log.Println("Server exiting")
+}
+
+// helper function 
+
+func loadOpenAPISpec(filePath string) (*openapi3.T, error) {
+    loader := openapi3.NewLoader()
+    doc, err := loader.LoadFromFile(filePath)
+    if err != nil {
+        return nil, err
+    }
+    return doc, nil
 }

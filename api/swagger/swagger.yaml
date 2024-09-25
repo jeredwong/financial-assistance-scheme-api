@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  title: Financial Assistance Scheme API
+  description: API for managing applicants, schemes, and applications for financial assistance programs.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /api/health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      tags:
+        - System
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+  /api/applicants:
+    get:
+      summary: List all applicants
+      description: Retrieves a paginated list of all applicants
+      tags:
+        - Applicants
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Applicant'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      summary: Create a new applicant
+      description: Creates a new applicant record
+      tags:
+        - Applicants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicantInput'
+      responses:
+        '201':
+          description: Applicant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input
+  /api/schemes:
+    get:
+      summary: List all schemes
+      description: Retrieves a list of all available financial assistance schemes
+      tags:
+        - Schemes
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scheme'
+  /api/applications:
+    get:
+      summary: List all applications
+      description: Retrieves a paginated list of all applications
+      tags:
+        - Applications
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      summary: Create a new application
+      description: Submits a new application for a financial assistance scheme
+      tags:
+        - Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInput'
+      responses:
+        '201':
+          description: Application created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '400':
+          description: Invalid input
+components:
+  schemas:
+    Applicant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        sex:
+          type: string
+          enum: [male, female, other]
+        maritalStatus:
+          type: string
+          enum: [single, married, divorced, widowed]
+        employmentStatus:
+          type: string
+          enum: [employed, unemployed]
+    ApplicantInput:
+      type: object
+      required:
+        - name
+        - dateOfBirth
+        - sex
+        - maritalStatus
+        - employmentStatus
+      properties:
+        name:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        sex:
+          type: string
+          enum: [male, female, other]
+        maritalStatus:
+          type: string
+          enum: [single, married, divorced, widowed]
+        employmentStatus:
+          type: string
+          enum: [employed, unemployed]
+    Scheme:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        applicantId:
+          type: string
+          format: uuid
+        schemeId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        submissionDate:
+          type: string
+          format: date-time
+    ApplicationInput:
+      type: object
+      required:
+        - applicantId
+        - schemeId
+      properties:
+        applicantId:
+          type: string
+          format: uuid
+        schemeId:
+          type: string
+          format: uuid
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
