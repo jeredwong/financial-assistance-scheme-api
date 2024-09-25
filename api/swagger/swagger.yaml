@@ -95,6 +95,38 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Scheme'
+  /api/schemes/eligible:
+    get:
+      summary: Get eligible schemes for an applicant
+      description: Retrieves a list of schemes that an applicant is eligible for based on their details
+      tags:
+        - Schemes
+      parameters:
+        - in: query
+          name: applicant_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The UUID of the applicant
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eligible_schemes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scheme'
+        '400':
+          description: Bad request (e.g., missing or invalid applicant_id)
+        '404':
+          description: Applicant not found
+        '500':
+          description: Internal server error
   /api/applications:
     get:
       summary: List all applications
