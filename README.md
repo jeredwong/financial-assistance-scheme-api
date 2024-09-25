@@ -59,7 +59,7 @@ The Financial Assistance Scheme API is a Go-based web service that manages appli
 
 For detailed API documentation, please refer to the Swagger UI when running the application.
 
-## Configuration
+<!-- ## Configuration
 
 The application can be configured using environment variables. See `.env.example` for available options.
 
@@ -71,7 +71,7 @@ Run the test suite with:
 go test ./...
 ```
 
-<!-- ## Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
