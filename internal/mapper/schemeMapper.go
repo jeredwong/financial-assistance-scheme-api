@@ -2,7 +2,6 @@ package mapper
 
 import (
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
-	// "github.com/jeredwong/financial-scheme-manager/internal/mapper"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 )
 
@@ -38,32 +37,3 @@ func SchemeModelsToDTOs(schemes []models.Scheme) []dto.SchemeDTO {
 	}
 	return schemeDTOs
 }
-
-	// schemeDTOs := make([]dto.SchemeDTO, len(schemes))
-	// for i, scheme := range(schemes) {
-	// 	schemeDTO := mapper.SchemeModelToDTO(scheme)
-
-	// 	criteria, err := h.schemeCriteriaService.GetSchemeCriteriaBySchemeId(scheme.ID)
-	// 	if err != nil {
-	// 		http.Error(w, "Failed to fetch scheme criteria", http.StatusInternalServerError)
-	// 		return
-	// 	}
-
-	// 	criteriaDTOs := mapper.SchemeCriteriaModelsToDTOs(criteria)
-	// 	schemeDTO.Criteria = criteriaDTOs
-
-	// 	for j, criteriaDTO := range(schemeDTO.Criteria) {
-
-	// 		benefits, err := h.benefitService.GetBenefitsBySchemeId(scheme.ID)
-	// 		if err != nil {
-	// 			http.Error(w, "Failed to fetch scheme benefits", http.StatusInternalServerError)
-	// 			return
-	// 		}
-	// 		criteriaDTO.Benefits = mapper.BenefitModelsToDTOs(benefits)
-
-	// 		criteriaDTOs[j] = criteriaDTO
-
-	// 	}
-
-	// 	schemeDTOs[i] = schemeDTO
-	// }

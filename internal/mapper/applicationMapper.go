@@ -1,19 +1,19 @@
 package mapper
 
 import (
+	"github.com/jeredwong/financial-scheme-manager/internal/constants"
 	"github.com/jeredwong/financial-scheme-manager/internal/dto"
 	"github.com/jeredwong/financial-scheme-manager/internal/models"
 )
 
-// what db needs
 func ApplicationDTOToModel(applicationDTO dto.ApplicationDTO) models.Application {
 	return models.Application{
+		Status: constants.ApplicationStatus(applicationDTO.Status),
 		ApplicantId: applicationDTO.Applicant.Id,
 		SchemeId: applicationDTO.Scheme.Id,
 	}
 }
 
-// what client needs
 func ApplicationModelToDTO(application models.Application) dto.ApplicationDTO {
 	return dto.ApplicationDTO{
 		Id: application.ID,

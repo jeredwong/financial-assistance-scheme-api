@@ -64,7 +64,7 @@ func (h *ApplicationHandler) GetAllApplications(w http.ResponseWriter, r *http.R
 
 	applicationDTOs := make([]dto.ApplicationDTO, len(applications))
 	for i, application := range(applications) {
-		applicationDTO := dto.ApplicationDTO{}
+		applicationDTO := mapper.ApplicationModelToDTO(application)
 
 		applicant, err := h.applicantService.GetApplicantById(application.ApplicantId)
 		if err != nil {
