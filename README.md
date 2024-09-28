@@ -54,7 +54,7 @@ The Financial Assistance Scheme API is a Go-based web service that manages appli
 - `GET /api/applicants`: List all applicants
 - `POST /api/applicants`: Create a new applicant
 - `GET /api/schemes`: List all schemes
-- `GET /api/schemes/eligible1`: List all eligible schemes for an applicant
+- `GET /api/schemes/eligible`: List all eligible schemes for an applicant
 - `GET /api/applications`: List all applications
 - `POST /api/applications`: Create a new application
 
